@@ -1,10 +1,12 @@
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * @author malloneec
  * @since 8/29/16
  */
 public class TripleStep {
+
+    private static Map<Integer, Integer> memo = new HashMap<>();
 
     public static void main(String[] args){
         Scanner scnr = new Scanner(System.in);
@@ -13,43 +15,41 @@ public class TripleStep {
     }
 
     private static void computeCombinations(int stairs){
-        int total = takeOne(stairs) + takeTwo(stairs) + takeThree(stairs);
-        System.out.println("Total number of combinations = " + total);
+        long startTime = System.currentTimeMillis();
+        System.out.println("[RECURSION] Beginning time: " + startTime);
+        System.out.println("[RECURSION] Total number of combinations (recursive) = " + takeSteps(stairs));
+        long endTime = System.currentTimeMillis();
+        System.out.println("[RECURSION] Completion time: "+ endTime);
+        System.out.println("[RECURSION] Time difference = " + (endTime-startTime) + "ms");
+        startTime = System.currentTimeMillis();
+        System.out.println("[MEMOIZATION] Beginning time: " + startTime);
+        System.out.println("[MEMOIZATION] Total number of combinations (recursive) = " + steps_with_memo(stairs));
+        endTime = System.currentTimeMillis();
+        System.out.println("[MEMOIZATION] Completion time: "+ endTime);
+        System.out.println("[MEMOIZATION] Time difference = " + (endTime-startTime) + "ms");
     }
 
+     private static int takeSteps(int supplied){
+         if(supplied > 0) {
+             return takeSteps(supplied - 1) + takeSteps(supplied - 2) + takeSteps(supplied - 3);
+         }else if(supplied == 0){
+             return 1;
+         }
+         else{
+             return 0;
+         }
+     }
 
-     private static int takeOne(int supplied){
-         int remaining = supplied - 1;
-         if(remaining > 0) {
-             return takeOne(remaining) + takeTwo(remaining) + takeThree(remaining);
-         }else if(remaining == 0){
+     private static int steps_with_memo(int supplied){
+         if(supplied < 0){
+             return 0;
+         }else if(supplied == 0){
              return 1;
          }else{
-             return 0;
-         }
-     }
-
-     private static int takeTwo(int supplied){
-         int remaining = supplied - 2;
-         if(remaining > 0) {
-             return takeOne(remaining) + takeTwo(remaining) + takeThree(remaining);
-         }else if(remaining == 0){
-             return 1;
-         }
-         else{
-             return 0;
-         }
-     }
-
-     private static int takeThree(int supplied){
-         int remaining = supplied - 3;
-         if(remaining > 0) {
-             return takeOne(remaining) + takeTwo(remaining) + takeThree(remaining);
-         }else if(remaining == 0){
-             return 1;
-         }
-         else{
-             return 0;
+             if(!memo.containsKey(supplied)){
+                 memo.put(supplied, steps_with_memo(supplied - 1) + steps_with_memo(supplied - 2) + steps_with_memo(supplied - 3));
+             }
+             return memo.get(supplied);
          }
      }
 }
